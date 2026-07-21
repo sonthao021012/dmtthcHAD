@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Mục Thủ Tục Hành Chính</title>
+    <!-- Modern Typography: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Background decorative elements -->
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+
+        <div class="glass-panel main-layout">
+            <!-- Sidebar Overlay for Mobile -->
+            <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+            <!-- Sidebar: Categories -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo">
+                        <img src="https://storage-vnportal.vnpt.vn/qnm-ubnd/6183/paner/QUOCHUY-removebg-preview.png" alt="Logo" class="official-logo">
+                    </div>
+                    <h2>UBND Phường<br>Hội An Đông</h2>
+                    <!-- Close button for mobile -->
+                    <button id="closeSidebarBtn" class="close-sidebar-btn">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm thủ tục...">
+                </div>
+                <ul id="categoryList" class="category-list">
+                    <!-- Categories will be injected here by app.js -->
+                </ul>
+            </aside>
+
+            <!-- Main Content Area: Procedures & PDF Viewer -->
+            <main class="content-area">
+                <!-- Mobile Header (Visible only on mobile) -->
+                <div class="mobile-header">
+                    <button id="menuToggle" class="menu-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2>UBND Hội An Đông</h2>
+                </div>
+
+                <header class="content-header">
+                    <h1 id="currentCategoryTitle">Vui lòng chọn một lĩnh vực</h1>
+                    <p id="procedureCount" class="subtitle">---</p>
+                </header>
+
+                <!-- Procedures Grid -->
+                <div id="proceduresGrid" class="procedures-grid">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <p>Chọn một lĩnh vực ở danh mục bên trái để xem danh sách các thủ tục hành chính.</p>
+                    </div>
+                </div>
+
+                <!-- PDF Viewer Modal Overlay -->
+                <div id="pdfModal" class="modal-overlay hidden">
+                    <div class="modal-content glass-panel">
+                        <div class="modal-header">
+                            <h3 id="pdfTitle">Tên thủ tục</h3>
+                            <button id="closeModalBtn" class="close-btn" title="Đóng">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Loading state -->
+                            <div id="pdfLoading" class="loading-spinner">
+                                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                <span>Đang tải tài liệu...</span>
+                            </div>
+                            <iframe id="pdfFrame" class="pdf-iframe" src="" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Data and Application Logic -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
