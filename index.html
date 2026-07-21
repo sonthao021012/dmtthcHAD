@@ -2,97 +2,726 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Mục Thủ Tục Hành Chính</title>
-    <!-- Modern Typography: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome for icons -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hệ Thống Tra Cứu Thủ Tục Hành Chính - Thanh Bar Đứng</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Thanh cuộn đứng nhỏ gọn */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .touch-active:active { transform: scale(0.98); }
+    </style>
 </head>
-<body>
-    <div class="app-container">
-        <!-- Background decorative elements -->
-        <div class="bg-shape shape-1"></div>
-        <div class="bg-shape shape-2"></div>
-        <div class="bg-shape shape-3"></div>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-red-500 selection:text-white">
 
-        <div class="glass-panel main-layout">
-            <!-- Sidebar Overlay for Mobile -->
-            <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    <!-- Header Trang Web -->
+    <header class="bg-gradient-to-r from-red-800 via-red-700 to-rose-900 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-2.5">
+                <div class="bg-white/10 p-2 rounded-xl backdrop-blur-md border border-white/20 shadow-inner shrink-0">
+                    <i class="fa-solid fa-building-columns text-yellow-300 text-lg sm:text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xs sm:text-base leading-tight tracking-tight uppercase">CỔNG THỦ TỤC HÀNH CHÍNH</h1>
+                    <p class="text-[10px] sm:text-xs text-red-100 flex items-center gap-1 font-light opacity-90">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-[9px]"></i> Tra cứu niêm yết 19 Lĩnh vực
+                    </p>
+                </div>
+            </div>
 
-            <!-- Sidebar: Categories -->
-            <aside class="sidebar" id="sidebar">
-                <div class="sidebar-header">
-                    <div class="logo">
-                        <img src="https://storage-vnportal.vnpt.vn/qnm-ubnd/6183/paner/QUOCHUY-removebg-preview.png" alt="Logo" class="official-logo">
+            <!-- Thống kê tổng số (desktop) -->
+            <div class="hidden md:flex items-center space-x-3 bg-red-950/40 px-3 py-1 rounded-xl border border-white/10 text-xs">
+                <div class="text-center px-1">
+                    <div id="stat-total-categories" class="font-bold text-yellow-300 text-sm sm:text-base">19</div>
+                    <div class="text-[8px] text-red-200 uppercase">Lĩnh vực</div>
+                </div>
+                <div class="h-4 w-px bg-white/20"></div>
+                <div class="text-center px-1">
+                    <div id="stat-total-procedures" class="font-bold text-yellow-300 text-sm sm:text-base">0</div>
+                    <div class="text-[8px] text-red-200 uppercase">Thủ tục</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Thanh Tìm Kiếm Cố Định Trên Cùng -->
+    <div class="bg-white border-b border-slate-200 shadow-sm sticky top-[49px] sm:top-[57px] z-20">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2">
+            <div class="relative w-full flex items-center gap-2">
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-xs sm:text-sm"></i>
                     </div>
-                    <h2>UBND Phường<br>Hội An Đông</h2>
-                    <!-- Close button for mobile -->
-                    <button id="closeSidebarBtn" class="close-sidebar-btn">
-                        <i class="fa-solid fa-times"></i>
+                    <input type="text" id="search-input" 
+                        placeholder="Nhập tên TTHC, mã số (VD: Khai sinh, Đất đai, 1.001193)..." 
+                        class="w-full pl-8 pr-8 py-2 bg-slate-100 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 text-xs sm:text-sm transition-all">
+                    <button id="clear-search-btn" class="hidden absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 p-1">
+                        <i class="fa-solid fa-xmark text-sm"></i>
                     </button>
                 </div>
-                <div class="search-box">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Tìm kiếm thủ tục...">
-                </div>
-                <ul id="categoryList" class="category-list">
-                    <!-- Categories will be injected here by app.js -->
-                </ul>
-            </aside>
-
-            <!-- Main Content Area: Procedures & PDF Viewer -->
-            <main class="content-area">
-                <!-- Mobile Header (Visible only on mobile) -->
-                <div class="mobile-header">
-                    <button id="menuToggle" class="menu-toggle">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                    <h2>UBND Hội An Đông</h2>
-                </div>
-
-                <header class="content-header">
-                    <h1 id="currentCategoryTitle">Vui lòng chọn một lĩnh vực</h1>
-                    <p id="procedureCount" class="subtitle">---</p>
-                </header>
-
-                <!-- Procedures Grid -->
-                <div id="proceduresGrid" class="procedures-grid">
-                    <div class="empty-state">
-                        <i class="fa-solid fa-folder-open"></i>
-                        <p>Chọn một lĩnh vực ở danh mục bên trái để xem danh sách các thủ tục hành chính.</p>
-                    </div>
-                </div>
-
-                <!-- PDF Viewer Modal Overlay -->
-                <div id="pdfModal" class="modal-overlay hidden">
-                    <div class="modal-content glass-panel">
-                        <div class="modal-header">
-                            <h3 id="pdfTitle">Tên thủ tục</h3>
-                            <button id="closeModalBtn" class="close-btn" title="Đóng">
-                                <i class="fa-solid fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Loading state -->
-                            <div id="pdfLoading" class="loading-spinner">
-                                <i class="fa-solid fa-circle-notch fa-spin"></i>
-                                <span>Đang tải tài liệu...</span>
-                            </div>
-                            <iframe id="pdfFrame" class="pdf-iframe" src="" frameborder="0"></iframe>
-                        </div>
-                    </div>
-                </div>
-            </main>
+                <button id="reset-filter-btn" title="Đặt lại bộ lọc" class="p-2 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 rounded-xl border border-slate-200 transition shrink-0 touch-active">
+                    <i class="fa-solid fa-rotate-left text-xs sm:text-sm"></i>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Data and Application Logic -->
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+    <!-- MAIN APP - Bố cục Chia 2 Cột Song Song (Cột 1 là Thanh Bar Đứng) -->
+    <main class="max-w-7xl mx-auto px-2 sm:px-6 py-3 flex-grow w-full">
+        <div class="grid grid-cols-12 gap-2 sm:gap-5 items-start">
+            
+            <!-- CỘT 1: THANH BAR ĐỨNG - DANH MỤC CÁC LĨNH VỰC -->
+            <section id="category-section" class="col-span-4 lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 overflow-hidden sticky top-[100px] sm:top-[115px]">
+                <!-- Header Cột 1 -->
+                <div class="bg-slate-900 text-white p-2 sm:p-3 border-b border-slate-800 flex justify-between items-center">
+                    <div class="flex items-center space-x-1.5">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-red-600 flex items-center justify-center text-[10px] sm:text-xs font-bold text-white shrink-0">
+                            1
+                        </div>
+                        <h2 class="font-bold text-[10px] sm:text-xs tracking-wide text-white uppercase truncate">Bar Lĩnh Vực</h2>
+                    </div>
+                    <span id="cat-badge-count" class="text-[9px] sm:text-[10px] bg-red-900/80 text-yellow-300 font-bold px-1.5 py-0.2 rounded-full border border-red-700 shrink-0">
+                        19 Lĩnh vực
+                    </span>
+                </div>
+
+                <!-- Danh sách Bar Đứng (Cột 1) - Cuộn dọc độc lập -->
+                <div id="category-column-container" class="p-1 sm:p-2 space-y-1 max-h-[calc(100vh-160px)] sm:max-h-[calc(100vh-180px)] overflow-y-auto custom-scrollbar">
+                    <!-- Dynamic rendering via OOP JavaScript -->
+                </div>
+            </section>
+
+            <!-- CỘT 2: CÁC THỦ TỤC HÀNH CHÍNH THEO LĨNH VỰC -->
+            <section id="procedure-section" class="col-span-8 lg:col-span-8 xl:col-span-9 space-y-2 sm:space-y-3">
+                <!-- Header Cột 2 -->
+                <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-2.5 sm:p-3.5 border-l-4 border-l-red-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-red-100 text-red-700 flex items-center justify-center text-xs font-bold shrink-0">
+                            2
+                        </div>
+                        <div>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-red-700 uppercase tracking-wider block">THỦ TỤC HÀNH CHÍNH NIÊM YẾT</span>
+                            <h3 id="active-category-title" class="font-bold text-slate-800 text-xs sm:text-base leading-tight truncate max-w-[200px] sm:max-w-none">
+                                Tất cả thủ tục hành chính
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg border border-slate-200 text-[10px] sm:text-xs text-slate-600 font-medium shrink-0 self-end sm:self-center">
+                        Số lượng: <span id="procedure-count-text" class="font-bold text-red-700">0</span>
+                    </div>
+                </div>
+
+                <!-- Danh sách Card Thủ Tục (Cột 2) -->
+                <div id="procedure-column-container" class="space-y-2 sm:space-y-2.5">
+                    <!-- Dynamic Procedure Cards -->
+                </div>
+
+                <!-- View khi không tìm thấy kết quả -->
+                <div id="empty-state-view" class="hidden bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center border border-slate-200 shadow-sm">
+                    <div class="w-10 h-10 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-2 text-base">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-xs sm:text-sm mb-1">Không tìm thấy thủ tục phù hợp</h4>
+                    <p class="text-slate-500 text-[11px] max-w-xs mx-auto">Thử nhập từ khóa khác hoặc bấm chọn lại ở Thanh Bar đứng Cột 1.</p>
+                    <button onclick="window.appController.resetFilters()" class="mt-3 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-medium transition shadow-sm inline-flex items-center gap-1 touch-active">
+                        <i class="fa-solid fa-rotate-left"></i> Tất cả lĩnh vực
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Nút Floating Back-to-Top -->
+    <button id="back-to-top-btn" class="fixed bottom-4 right-4 w-9 h-9 sm:w-11 sm:h-11 bg-red-700 text-white rounded-full shadow-xl border border-red-500/30 flex items-center justify-center text-xs sm:text-base z-30 opacity-0 pointer-events-none transition-all duration-300 touch-active">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- PDF Viewer Modal -->
+    <div id="pdf-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 hidden flex flex-col justify-between p-0 sm:p-3 transition-opacity duration-300">
+        <!-- Modal Toolbar -->
+        <div class="bg-slate-900 text-white p-2.5 sm:p-3 flex items-center justify-between border-b border-slate-800 shrink-0">
+            <div class="flex items-center space-x-2 overflow-hidden pr-2">
+                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-red-600/30 text-red-400 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-file-pdf text-sm sm:text-base"></i>
+                </div>
+                <div class="truncate">
+                    <div class="flex items-center gap-1">
+                        <span id="modal-proc-code" class="text-[9px] sm:text-[10px] bg-red-900/60 text-red-300 font-mono px-1.5 py-0.2 rounded border border-red-700/50">MÃ TTHC</span>
+                    </div>
+                    <h3 id="modal-proc-title" class="font-bold text-xs sm:text-sm text-slate-100 truncate mt-0.5">Tên Thủ tục hành chính</h3>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-1 shrink-0">
+                <a id="modal-open-newtab-btn" href="#" target="_blank" rel="noopener" class="p-1.5 sm:px-3 sm:py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition flex items-center gap-1 touch-active" title="Mở tab mới">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> <span class="hidden sm:inline">Mở tab mới</span>
+                </a>
+                <a id="modal-download-btn" href="#" download class="p-1.5 sm:px-3 sm:py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-medium rounded-lg transition flex items-center gap-1 touch-active" title="Tải về">
+                    <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Tải PDF</span>
+                </a>
+                <button id="modal-close-btn" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white transition flex items-center justify-center touch-active">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PDF Embed Viewer -->
+        <div class="bg-slate-900 flex-grow relative overflow-hidden flex flex-col justify-center items-center">
+            <div id="pdf-loading-spinner" class="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center z-10 text-white p-4 text-center">
+                <div class="w-8 h-8 border-3 border-red-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+                <p class="text-xs text-slate-300 font-medium">Đang tải tài liệu PDF đính kèm...</p>
+            </div>
+
+            <iframe id="pdf-iframe" class="w-full h-full border-0" src="about:blank"></iframe>
+        </div>
+
+        <!-- Bottom Status Bar -->
+        <div class="bg-slate-900 text-slate-400 text-[10px] sm:text-[11px] py-1.5 px-3 flex justify-between items-center border-t border-slate-800 shrink-0">
+            <div id="modal-proc-pages" class="flex items-center gap-1">
+                <i class="fa-solid fa-book-open text-red-400"></i>
+                <span>Trang: <strong id="modal-page-range-text" class="text-slate-200">1 - 10</strong></span>
+            </div>
+            <div class="text-slate-500 truncate max-w-[140px] sm:max-w-none">
+                Cơ quan niêm yết: UBND Cấp Xã
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-5 bg-slate-900 text-white px-3.5 py-2.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2 z-50 transform translate-y-20 opacity-0 transition-all duration-300 text-xs">
+        <div id="toast-icon" class="text-emerald-400"><i class="fa-solid fa-circle-check text-sm"></i></div>
+        <div id="toast-message" class="font-medium">Thông báo</div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 text-[10px] sm:text-[11px] py-3 mt-6 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="font-medium text-slate-300">CỔNG TRA CỨU THỦ TỤC HÀNH CHÍNH (CẤP XÃ)</p>
+            <p class="text-slate-500">Thiết kế Bố cục 2 Cột chuẩn hóa Thanh Bar Đứng.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT OBJECT-ORIENTED ARCHITECTURE (OOP) -->
+    <script>
+        /**
+         * LỚP 1: Procedure Model
+         */
+        class Procedure {
+            constructor(id, code, name, categoryId, categoryName, pdfFile, pageRange) {
+                this.id = id;
+                this.code = code;
+                this.name = name;
+                this.categoryId = categoryId;
+                this.categoryName = categoryName;
+                this.pdfFile = pdfFile;
+                this.pageRange = pageRange;
+            }
+
+            // Xử lý thông minh URL xem trực tiếp trên Google Drive hoặc File địa phương
+            getPdfViewerUrl() {
+                let pageNum = 1;
+                if (this.pageRange) {
+                    const match = this.pageRange.match(/\d+/);
+                    if (match) pageNum = parseInt(match[0], 10);
+                }
+
+                if (this.pdfFile.startsWith('http://') || this.pdfFile.startsWith('https://')) {
+                    // Tự động nhận diện Google Drive URL để hiển thị preview mượt trong iframe
+                    if (this.pdfFile.includes('drive.usercontent.google.com') || this.pdfFile.includes('drive.google.com')) {
+                        const idMatch = this.pdfFile.match(/id=([a-zA-Z0-9_-]+)/) || this.pdfFile.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                        if (idMatch && idMatch[1]) {
+                            return `https://drive.google.com/file/d/${idMatch[1]}/preview`;
+                        }
+                    }
+                    return `${this.pdfFile}#page=${pageNum}`;
+                }
+                return `${encodeURIComponent(this.pdfFile)}#page=${pageNum}`;
+            }
+
+            getDownloadUrl() {
+                return this.pdfFile;
+            }
+        }
+
+        /**
+         * LỚP 2: Category Model
+         */
+        class Category {
+            constructor(id, code, name, icon, pdfFile, description) {
+                this.id = id;
+                this.code = code;
+                this.name = name;
+                this.icon = icon;
+                this.pdfFile = pdfFile;
+                this.description = description;
+                this.procedureCount = 0;
+            }
+        }
+
+        /**
+         * LỚP 3: ProcedureRepository
+         */
+        class ProcedureRepository {
+            constructor() {
+                this.categories = new Map();
+                this.procedures = [];
+                this.initData();
+            }
+
+            initData() {
+                // Khởi tạo 19 Lĩnh vực chính thức (Cập nhật link Google Drive trực tiếp cho CAT_01)
+                const rawCategories = [
+                    { 
+                        id: 'CAT_01', 
+                        code: 'BTXH', 
+                        name: '1. Bảo trợ xã hội & ATTP', 
+                        icon: 'fa-hand-holding-heart', 
+                        pdfFile: 'https://drive.usercontent.google.com/download?id=1VMtYehNFWP9DTuKi8N7Q4YlZ6PKdNGso&export=download&authuser=0&confirm=t&uuid=2f837745-97d0-4c78-83f5-eb3587d2b163&at=ABswASaxrqJzIFGoRAgvX6wq380W:1784622206188', 
+                        description: 'Trợ cấp xã hội, bảo trợ trẻ em và an toàn thực phẩm.' 
+                    },
+                    { id: 'CAT_02', code: 'GDĐT', name: '2. Giáo dục & Đào tạo', icon: 'fa-graduation-cap', pdfFile: 'QR 2. lĩnh vực giáo dục(new).pdf', description: 'Thành lập, cấp phép nhà trẻ, mầm non, tiểu học.' },
+                    { id: 'CAT_03', code: 'NCC', name: '3. Người có công', icon: 'fa-award', pdfFile: 'QR 3. Người có công  (new).pdf', description: 'Thờ cúng liệt sĩ, Mẹ VN Anh hùng, LLLVTN.' },
+                    { id: 'CAT_04', code: 'NỘI VỤ', name: '4. Nội vụ & Việc làm', icon: 'fa-users-gear', pdfFile: 'QR 4. Hoi, Quy, Lao dong viec làm (Noi vu) thang 8.2025-.pdf', description: 'Thành lập hội, ban vận động, vay vốn việc làm.' },
+                    { id: 'CAT_05', code: 'VĂN HÓA', name: '5. Văn hóa & Thể thao', icon: 'fa-masks-theater', pdfFile: 'QR 5. LĨNH VỰC VĂN HÓA THỂ THAO VÀ THÔNG TIN ĐIỆN TỬ.pdf', description: 'Đăng ký lễ hội cấp xã, trò chơi điện tử.' },
+                    { id: 'CAT_06', code: 'DÂN SỐ', name: '6. Dân số & Trẻ em', icon: 'fa-children', pdfFile: 'QR 6. DÂN SỐ -BÀ MẸ - TRẺ EM VÀ GIA ĐÌNH.docx huyền.pdf', description: 'Can thiệp khẩn cấp trẻ em, sinh con đúng chính sách.' },
+                    { id: 'CAT_07', code: 'HỘ TỊCH TN', name: '7. Hộ tịch (Trong nước)', icon: 'fa-id-card', pdfFile: 'QR 7. LĨNH VỰC HỘ TỊCH (trong nước)-.pdf', description: 'Khai sinh, kết hôn, khai tử, nhận cha mẹ con.' },
+                    { id: 'CAT_08', code: 'HỘ TỊCH NN', name: '8. Hộ tịch (Nước ngoài)', icon: 'fa-passport', pdfFile: 'QR 8. Lĩnh vực hộ tịch (có yếu tố nước ngaoif)-.pdf', description: 'Khai sinh, kết hôn có yếu tố nước ngoài.' },
+                    { id: 'CAT_09', code: 'NUÔI CON', name: '9. Nuôi con nuôi', icon: 'fa-baby', pdfFile: 'QR 9. nuôi con nuôi-.pdf', description: 'Đăng ký nuôi con nuôi trong nước.' },
+                    { id: 'CAT_10', code: 'CHỨNG THỰC', name: '10. Chứng thực', icon: 'fa-file-signature', pdfFile: 'QR 10. Lĩnh vực Chứng thực.pdf', description: 'Chứng thực hợp đồng nhà đất, di chúc, bản sao.' },
+                    { id: 'CAT_11', code: 'TƯ PHÁP', name: '11. Tư pháp & Bồi thường', icon: 'fa-scale-balanced', pdfFile: 'QR 11. Lĩnh vực Tư pháp.pdf', description: 'Bồi thường nhà nước, công nhận hòa giải viên.' },
+                    { id: 'CAT_12', code: 'GIAO THÔNG', name: '12. Giao thông đường bộ', icon: 'fa-route', pdfFile: 'QR 12 (Lĩnh vực đường bộ,  GTVT).pdf', description: 'Gia hạn bến thủy, giấy phép thi công đường bộ.' },
+                    { id: 'CAT_13', code: 'XÂY DỰNG', name: '13. Nhà ở & Xây dựng', icon: 'fa-city', pdfFile: 'QR 13.  Nhà ở và hoạt động xây dựng.pdf', description: 'Giấy phép xây dựng mới, sửa chữa nhà ở.' },
+                    { id: 'CAT_14', code: 'QUY HOẠCH', name: '14. Quy hoạch đô thị', icon: 'fa-map-location-dot', pdfFile: 'QR 14. Quy hoạch đô thị và nông thôn.pdf', description: 'Thẩm định, phê duyệt nhiệm vụ quy hoạch.' },
+                    { id: 'CAT_15', code: 'ĐẤT ĐAI', name: '15. Đất đai', icon: 'fa-vector-square', pdfFile: 'QR 15. Đất đai.pdf', description: 'Xác định diện tích đất ở, đính chính, cấp GCN.' },
+                    { id: 'CAT_16', code: 'NÔNG NGHIỆP', name: '16. Nông nghiệp & MT', icon: 'fa-seedling', pdfFile: 'QR 16. Nông nghiệp và Môi trường.pdf', description: 'Đăng ký khai thác nước dưới đất, trợ cấp PCTT.' },
+                    { id: 'CAT_17', code: 'TÀI CHÍNH', name: '17. Tài chính - Hộ KD', icon: 'fa-coins', pdfFile: 'QR 17( linh vuc tài chính)(new).pdf', description: 'Đăng ký thành lập, thay đổi Hộ kinh doanh.' },
+                    { id: 'CAT_18', code: 'CÔNG THƯƠNG', name: '18. Công thương & ATTP', icon: 'fa-store', pdfFile: 'QR 18.  (lĩnh vực công thuong và ATTP) (new).pdf', description: 'Giấy phép sản xuất rượu, bán lẻ thuốc lá.' },
+                    { id: 'CAT_19', code: 'TÍN NGƯỠNG', name: '19. Tín ngưỡng, Tôn giáo', icon: 'fa-church', pdfFile: 'QR 19. Lĩnh vực Tín ngưỡng, tôn giáo và dân tộc 9.2025.pdf', description: 'Đăng ký sinh hoạt tôn giáo tập trung.' }
+                ];
+
+                rawCategories.forEach(c => {
+                    this.categories.set(c.id, new Category(c.id, c.code, c.name, c.icon, c.pdfFile, c.description));
+                });
+
+                // Khởi tạo các Thủ tục hành chính chi tiết
+                const rawProcedures = [
+                    // CAT_01
+                    { code: '2.000286.H17', name: 'Tiếp nhận đối tượng khó khăn vào cơ sở trợ giúp xã hội', catId: 'CAT_01', page: 'Trang 1 - 4' },
+                    { code: '2.000282.H17', name: 'Tiếp nhận đối tượng khẩn cấp vào cơ sở trợ giúp xã hội', catId: 'CAT_01', page: 'Trang 5 - 8' },
+                    { code: '1.001776.H17', name: 'Thực hiện, điều chỉnh, thôi hưởng trợ cấp xã hội hàng tháng', catId: 'CAT_01', page: 'Trang 11 - 34' },
+                    // CAT_02
+                    { code: '1.012961.H17', name: 'Thành lập hoặc cho phép thành lập trường mầm non, nhà trẻ', catId: 'CAT_02', page: 'Trang 5 - 11' },
+                    { code: '1.006390.H17', name: 'Cho phép trường mầm non, nhà trẻ hoạt động giáo dục', catId: 'CAT_02', page: 'Trang 12 - 15' },
+                    { code: '1.012963.H17', name: 'Thành lập hoặc cho phép thành lập trường tiểu học', catId: 'CAT_02', page: 'Trang 48 - 54' },
+                    // CAT_03
+                    { code: '1.010803', name: 'Giải quyết chế độ trợ cấp thờ cúng liệt sĩ', catId: 'CAT_03', page: 'Trang 10 - 12' },
+                    { code: '1.010804', name: 'Giải quyết chế độ Bà mẹ Việt Nam anh hùng', catId: 'CAT_03', page: 'Trang 13 - 15' },
+                    // CAT_04
+                    { code: '1.012927', name: 'Thủ tục công nhận ban vận động thành lập hội', catId: 'CAT_04', page: 'Trang 3 - 10' },
+                    { code: '1.012940', name: 'Thủ tục thành lập hội', catId: 'CAT_04', page: 'Trang 11 - 27' },
+                    { code: '1.013725', name: 'Vay vốn hỗ trợ tạo việc làm từ Quỹ quốc gia việc làm', catId: 'CAT_04', page: 'Trang 117 - 120' },
+                    // CAT_05
+                    { code: '1.013791.H17', name: 'Đăng ký lễ hội quy mô cấp xã', catId: 'CAT_05', page: 'Trang 2 - 3' },
+                    { code: '1.013792.H17', name: 'Cấp GCN đủ điều kiện hoạt động điểm trò chơi điện tử', catId: 'CAT_05', page: 'Trang 5 - 9' },
+                    // CAT_06
+                    { code: '1.004.946.H17', name: 'Áp dụng biện pháp can thiệp khẩn cấp bảo vệ trẻ em', catId: 'CAT_06', page: 'Trang 1 - 8' },
+                    { code: '2.001088.H17', name: 'Xét hưởng chính sách hỗ trợ sinh con đúng chính sách', catId: 'CAT_06', page: 'Trang 35 - 41' },
+                    // CAT_07
+                    { code: '1.001193.H17', name: 'Đăng ký khai sinh', catId: 'CAT_07', page: 'Trang 1 - 14' },
+                    { code: '1.004884.H17', name: 'Đăng ký lại khai sinh', catId: 'CAT_07', page: 'Trang 15 - 27' },
+                    { code: '1.000894.H17', name: 'Đăng ký kết hôn', catId: 'CAT_07', page: 'Trang 64 - 74' },
+                    { code: '1.000656.H17', name: 'Đăng ký khai tử', catId: 'CAT_07', page: 'Trang 86 - 96' },
+                    // CAT_08
+                    { code: '2.000528.H17', name: 'Đăng ký khai sinh có yếu tố nước ngoài', catId: 'CAT_08', page: 'Trang 3 - 14' },
+                    { code: '2.000806.H17', name: 'Đăng ký kết hôn có yếu tố nước ngoài', catId: 'CAT_08', page: 'Trang 59 - 70' },
+                    // CAT_09
+                    { code: '2.001263.H17', name: 'Đăng ký việc nuôi con nuôi trong nước', catId: 'CAT_09', page: 'Trang 2 - 15' },
+                    // CAT_10
+                    { code: '2.001035.H17', name: 'Chứng thực hợp đồng, giao dịch nhà đất, động sản', catId: 'CAT_10', page: 'Trang 1 - 3' },
+                    { code: '2.001019.H17', name: 'Chứng thực di chúc', catId: 'CAT_10', page: 'Trang 4 - 5' },
+                    // CAT_11
+                    { code: '2.002165.H17', name: 'Giải quyết yêu cầu bồi thường nhà nước cấp xã', catId: 'CAT_11', page: 'Trang 2 - 5' },
+                    { code: '1.002211.H17', name: 'Công nhận hòa giải viên cơ sở', catId: 'CAT_11', page: 'Trang 8 - 9' },
+                    // CAT_12
+                    { code: '1.009444.H17', name: 'Gia hạn hoạt động cảng, bến thủy nội địa', catId: 'CAT_12', page: 'Trang 4 - 5' },
+                    { code: '2.001659.H17', name: 'Cấp Giấy phép thi công đường bộ', catId: 'CAT_12', page: 'Trang 50 - 55' },
+                    // CAT_13
+                    { code: '1.013225.H17', name: 'Cấp giấy phép xây dựng mới nhà ở riêng lẻ, cấp III, IV', catId: 'CAT_13', page: 'Trang 8 - 32' },
+                    { code: '1.013229.H17', name: 'Cấp giấy phép cải tạo, sửa chữa công trình cấp III, IV', catId: 'CAT_13', page: 'Trang 33 - 50' },
+                    // CAT_14
+                    { code: '1.014155.H17', name: 'Thẩm định nhiệm vụ quy hoạch đô thị và nông thôn', catId: 'CAT_14', page: 'Trang 3 - 5' },
+                    // CAT_15
+                    { code: '1.012817.H17', name: 'Xác định lại diện tích đất ở đã cấp GCN trước 01/07/2004', catId: 'CAT_15', page: 'Trang 1 - 4' },
+                    { code: '1.012796.H17', name: 'Đính chính Giấy chứng nhận đã cấp lần đầu có sai sót', catId: 'CAT_15', page: 'Trang 5 - 8' },
+                    // CAT_16
+                    { code: '1.001662', name: 'Đăng ký khai thác, sử dụng nước dưới đất', catId: 'CAT_16', page: 'Trang 1 - 7' },
+                    // CAT_17
+                    { code: '1.001612.H17', name: 'Đăng ký thành lập hộ kinh doanh', catId: 'CAT_17', page: 'Trang 4 - 7' },
+                    { code: '2.000720.H17', name: 'Đăng ký thay đổi nội dung đăng ký hộ kinh doanh', catId: 'CAT_17', page: 'Trang 8 - 12' },
+                    // CAT_18
+                    { code: '2.000633.H17', name: 'Cấp Giấy phép sản xuất rượu thủ công kinh doanh', catId: 'CAT_18', page: 'Trang 1 - 4' },
+                    { code: '2.000181.H17', name: 'Cấp Giấy phép bán lẻ sản phẩm thuốc lá', catId: 'CAT_18', page: 'Trang 23 - 29' },
+                    // CAT_19
+                    { code: '1.012590', name: 'Đăng ký sinh hoạt tôn giáo tập trung', catId: 'CAT_19', page: 'Trang 3 - 7' }
+                ];
+
+                let autoId = 1;
+                rawProcedures.forEach(p => {
+                    const category = this.categories.get(p.catId);
+                    if (category) {
+                        const proc = new Procedure(
+                            `PROC_${autoId++}`,
+                            p.code,
+                            p.name,
+                            category.id,
+                            category.name,
+                            category.pdfFile,
+                            p.page
+                        );
+                        this.procedures.push(proc);
+                        category.procedureCount++;
+                    }
+                });
+            }
+
+            getAllCategories() {
+                return Array.from(this.categories.values());
+            }
+
+            getCategoryById(id) {
+                return this.categories.get(id);
+            }
+
+            searchProcedures(categoryId = 'ALL', keyword = '') {
+                let list = this.procedures;
+
+                if (categoryId !== 'ALL') {
+                    list = list.filter(p => p.categoryId === categoryId);
+                }
+
+                if (keyword.trim() !== '') {
+                    const term = keyword.toLowerCase().trim();
+                    list = list.filter(p => 
+                        p.name.toLowerCase().includes(term) || 
+                        p.code.toLowerCase().includes(term) ||
+                        p.categoryName.toLowerCase().includes(term)
+                    );
+                }
+
+                return list;
+            }
+
+            getTotalProceduresCount() {
+                return this.procedures.length;
+            }
+        }
+
+        /**
+         * LỚP 4: PDFViewerModal
+         */
+        class PDFViewerModal {
+            constructor() {
+                this.modalEl = document.getElementById('pdf-modal');
+                this.iframeEl = document.getElementById('pdf-iframe');
+                this.titleEl = document.getElementById('modal-proc-title');
+                this.codeEl = document.getElementById('modal-proc-code');
+                this.pagesEl = document.getElementById('modal-page-range-text');
+                this.downloadBtn = document.getElementById('modal-download-btn');
+                this.openNewTabBtn = document.getElementById('modal-open-newtab-btn');
+                this.closeBtn = document.getElementById('modal-close-btn');
+                this.spinnerEl = document.getElementById('pdf-loading-spinner');
+
+                this.bindEvents();
+            }
+
+            bindEvents() {
+                this.closeBtn.addEventListener('click', () => this.close());
+                
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !this.modalEl.classList.contains('hidden')) {
+                        this.close();
+                    }
+                });
+
+                this.iframeEl.addEventListener('load', () => {
+                    this.spinnerEl.classList.add('hidden');
+                });
+            }
+
+            open(procedure) {
+                this.spinnerEl.classList.remove('hidden');
+                this.titleEl.textContent = procedure.name;
+                this.codeEl.textContent = procedure.code;
+                this.pagesEl.textContent = procedure.pageRange || 'Toàn văn';
+
+                const pdfViewerUrl = procedure.getPdfViewerUrl();
+                const pdfDownloadUrl = procedure.getDownloadUrl();
+
+                this.iframeEl.src = pdfViewerUrl;
+                this.downloadBtn.href = pdfDownloadUrl;
+                this.openNewTabBtn.href = pdfViewerUrl;
+
+                this.modalEl.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            close() {
+                this.modalEl.classList.add('hidden');
+                this.iframeEl.src = 'about:blank';
+                document.body.style.overflow = '';
+            }
+        }
+
+        /**
+         * LỚP 5: AppUIController
+         */
+        class AppUIController {
+            constructor() {
+                this.repository = new ProcedureRepository();
+                this.pdfModal = new PDFViewerModal();
+
+                this.activeCategoryId = 'ALL';
+                this.searchKeyword = '';
+
+                this.initDOMReferences();
+                this.bindEvents();
+                this.render();
+            }
+
+            initDOMReferences() {
+                this.categoryColumnContainer = document.getElementById('category-column-container');
+                this.procedureColumnContainer = document.getElementById('procedure-column-container');
+                
+                this.searchInput = document.getElementById('search-input');
+                this.clearSearchBtn = document.getElementById('clear-search-btn');
+                this.resetFilterBtn = document.getElementById('reset-filter-btn');
+                this.emptyStateView = document.getElementById('empty-state-view');
+                this.backToTopBtn = document.getElementById('back-to-top-btn');
+
+                this.activeCategoryTitle = document.getElementById('active-category-title');
+                this.procedureCountText = document.getElementById('procedure-count-text');
+
+                // Thống kê header
+                document.getElementById('stat-total-categories').textContent = this.repository.getAllCategories().length;
+                document.getElementById('stat-total-procedures').textContent = this.repository.getTotalProceduresCount();
+            }
+
+            bindEvents() {
+                // Ô Tìm kiếm
+                this.searchInput.addEventListener('input', (e) => {
+                    this.searchKeyword = e.target.value;
+                    if (this.searchKeyword.length > 0) {
+                        this.clearSearchBtn.classList.remove('hidden');
+                    } else {
+                        this.clearSearchBtn.classList.add('hidden');
+                    }
+                    this.renderProceduresColumn();
+                });
+
+                this.clearSearchBtn.addEventListener('click', () => {
+                    this.searchInput.value = '';
+                    this.searchKeyword = '';
+                    this.clearSearchBtn.classList.add('hidden');
+                    this.renderProceduresColumn();
+                });
+
+                this.resetFilterBtn.addEventListener('click', () => {
+                    this.resetFilters();
+                });
+
+                // Nút Back To Top
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 200) {
+                        this.backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                    } else {
+                        this.backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+                    }
+                });
+
+                this.backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            resetFilters() {
+                this.activeCategoryId = 'ALL';
+                this.searchKeyword = '';
+                this.searchInput.value = '';
+                this.clearSearchBtn.classList.add('hidden');
+                this.renderCategoriesBar();
+                this.renderProceduresColumn();
+                this.showToast('Đã xem tất cả lĩnh vực', 'info');
+            }
+
+            setActiveCategory(catId) {
+                this.activeCategoryId = catId;
+                this.renderCategoriesBar();
+                this.renderProceduresColumn();
+            }
+
+            render() {
+                this.renderCategoriesBar();
+                this.renderProceduresColumn();
+            }
+
+            // RENDER CỘT 1: THANH BAR ĐỨNG CÁC LĨNH VỰC
+            renderCategoriesBar() {
+                this.categoryColumnContainer.innerHTML = '';
+                const categories = this.repository.getAllCategories();
+                const totalProcs = this.repository.getTotalProceduresCount();
+
+                // Nút "Tất cả Lĩnh vực" ở đầu Thanh Bar đứng
+                const isAllActive = this.activeCategoryId === 'ALL';
+                const allCatBtn = document.createElement('div');
+                allCatBtn.className = `p-2 sm:p-2.5 rounded-xl transition-all cursor-pointer flex flex-col sm:flex-row items-center sm:justify-between border text-center sm:text-left touch-active ${
+                    isAllActive 
+                        ? 'bg-red-700 text-white border-red-800 shadow-sm font-semibold' 
+                        : 'bg-slate-50 hover:bg-red-50 text-slate-700 border-slate-200'
+                }`;
+                allCatBtn.innerHTML = `
+                    <div class="flex items-center space-x-1.5 sm:space-x-2 overflow-hidden w-full">
+                        <i class="fa-solid fa-layer-group ${isAllActive ? 'text-yellow-300' : 'text-red-600'} text-xs shrink-0"></i>
+                        <span class="text-[11px] sm:text-xs truncate">Tất cả 19 Lĩnh vực</span>
+                    </div>
+                    <span class="hidden sm:inline text-[10px] px-1.5 py-0.2 rounded-full ${isAllActive ? 'bg-red-900 text-yellow-300' : 'bg-slate-200 text-slate-700'} font-bold shrink-0">
+                        ${totalProcs}
+                    </span>
+                `;
+                allCatBtn.onclick = () => this.setActiveCategory('ALL');
+                this.categoryColumnContainer.appendChild(allCatBtn);
+
+                // Render 19 Lĩnh vực xếp DỌC trong Cột 1
+                categories.forEach(cat => {
+                    const isActive = this.activeCategoryId === cat.id;
+                    const catItem = document.createElement('div');
+                    catItem.className = `p-2 sm:p-2.5 rounded-xl transition-all cursor-pointer flex flex-col sm:flex-row items-center sm:justify-between border group touch-active ${
+                        isActive 
+                            ? 'bg-red-700 text-white border-red-800 shadow-sm font-semibold' 
+                            : 'bg-white hover:bg-red-50 text-slate-700 border-slate-200 hover:border-red-300'
+                    }`;
+
+                    catItem.innerHTML = `
+                        <div class="flex items-center space-x-1.5 sm:space-x-2 overflow-hidden w-full">
+                            <i class="fa-solid ${cat.icon} ${isActive ? 'text-yellow-300' : 'text-red-600 group-hover:scale-110'} transition-transform text-xs w-3.5 text-center shrink-0"></i>
+                            <span class="text-[10px] sm:text-xs truncate leading-snug">${cat.name}</span>
+                        </div>
+                        <span class="hidden sm:inline text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-red-900 text-yellow-300' : 'bg-slate-100 text-slate-600'} font-bold shrink-0">
+                            ${cat.procedureCount}
+                        </span>
+                    `;
+
+                    catItem.onclick = () => this.setActiveCategory(cat.id);
+                    this.categoryColumnContainer.appendChild(catItem);
+                });
+            }
+
+            // RENDER CỘT 2: DANH SÁCH THỦ TỤC HÀNH CHÍNH
+            renderProceduresColumn() {
+                const procedures = this.repository.searchProcedures(this.activeCategoryId, this.searchKeyword);
+                this.procedureColumnContainer.innerHTML = '';
+                this.procedureCountText.textContent = procedures.length;
+
+                if (this.activeCategoryId === 'ALL') {
+                    this.activeCategoryTitle.textContent = 'Danh mục Tất cả Lĩnh vực';
+                } else {
+                    const activeCat = this.repository.getCategoryById(this.activeCategoryId);
+                    if (activeCat) {
+                        this.activeCategoryTitle.textContent = activeCat.name;
+                    }
+                }
+
+                if (procedures.length === 0) {
+                    this.emptyStateView.classList.remove('hidden');
+                    return;
+                } else {
+                    this.emptyStateView.classList.add('hidden');
+                }
+
+                procedures.forEach(proc => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-slate-200 hover:border-red-400 hover:shadow-md transition-all duration-200 group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5';
+
+                    const displayFileName = proc.pdfFile.startsWith('http') 
+                        ? 'QR 1. LĨNH VỰC BTXH, PCTNXH, ATTP.pdf (Link Drive)' 
+                        : proc.pdfFile;
+
+                    card.innerHTML = `
+                        <div class="space-y-1 flex-grow">
+                            <div class="flex flex-wrap items-center gap-1">
+                                <span class="bg-red-50 text-red-700 border border-red-200 font-mono text-[9px] sm:text-[10px] font-bold px-1.5 py-0.2 rounded">
+                                    <i class="fa-solid fa-barcode mr-0.5"></i>${proc.code}
+                                </span>
+                                <span class="bg-slate-100 text-slate-600 text-[9px] sm:text-[10px] font-medium px-1.5 py-0.2 rounded truncate max-w-[120px] sm:max-w-none">
+                                    <i class="fa-solid fa-folder mr-0.5 text-amber-500"></i>${proc.categoryName}
+                                </span>
+                                <span class="bg-emerald-50 text-emerald-700 text-[9px] sm:text-[10px] font-medium px-1.5 py-0.2 rounded">
+                                    <i class="fa-solid fa-file-lines mr-0.5"></i>${proc.pageRange}
+                                </span>
+                            </div>
+
+                            <h3 class="font-bold text-slate-800 text-xs sm:text-sm group-hover:text-red-600 transition-colors cursor-pointer leading-snug pt-0.5">
+                                ${proc.name}
+                            </h3>
+
+                            <p class="text-[9px] sm:text-[11px] text-slate-400 flex items-center gap-1 pt-0.5">
+                                <span class="truncate"><i class="fa-solid fa-paperclip mr-1 text-slate-400"></i>Tệp đính kèm: <code class="text-slate-600 font-mono">${displayFileName}</code></span>
+                            </p>
+                        </div>
+
+                        <div class="flex items-center shrink-0 pt-1 sm:pt-0 border-t sm:border-0 border-slate-100">
+                            <button class="view-pdf-btn w-full sm:w-auto px-3 py-1.5 sm:px-3.5 sm:py-2 bg-red-600 hover:bg-red-700 text-white font-medium text-[11px] sm:text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 touch-active">
+                                <i class="fa-solid fa-eye text-yellow-300"></i> Xem File đính kèm
+                            </button>
+                        </div>
+                    `;
+
+                    const clickTargets = card.querySelectorAll('.view-pdf-btn, h3');
+                    clickTargets.forEach(target => {
+                        target.addEventListener('click', () => {
+                            this.pdfModal.open(proc);
+                        });
+                    });
+
+                    this.procedureColumnContainer.appendChild(card);
+                });
+            }
+
+            showToast(message, type = 'success') {
+                const toast = document.getElementById('toast-notification');
+                const toastMsg = document.getElementById('toast-message');
+                const toastIcon = document.getElementById('toast-icon');
+
+                toastMsg.textContent = message;
+                if (type === 'success') {
+                    toastIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>`;
+                } else {
+                    toastIcon.innerHTML = `<i class="fa-solid fa-circle-info text-sky-400 text-sm"></i>`;
+                }
+
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 2500);
+            }
+        }
+
+        // Khởi tạo ứng dụng
+        document.addEventListener('DOMContentLoaded', () => {
+            window.appController = new AppUIController();
+        });
+    </script>
 </body>
 </html>
