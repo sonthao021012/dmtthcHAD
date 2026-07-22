@@ -28,13 +28,17 @@
     <header class="bg-gradient-to-r from-red-800 via-red-700 to-rose-900 text-white shadow-md sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2">
             <div class="flex items-center space-x-2.5">
-                <div class="bg-white/10 p-2 rounded-xl backdrop-blur-md border border-white/20 shadow-inner shrink-0">
-                    <i class="fa-solid fa-building-columns text-yellow-300 text-lg sm:text-2xl"></i>
+                <!-- Logo Cổng Dịch vụ công / Quốc huy -->
+                <div class="bg-white p-1 rounded-xl shadow-md shrink-0 flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 overflow-hidden border border-white/30">
+                    <img src="https://xdcs.cdnchinhphu.vn/446259493575335936/2025/9/15/photo-1757928282881-17579282829531625544851.png" 
+                         alt="Logo Trung tâm PHCC" 
+                         class="w-full h-full object-contain"
+                         onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Emblem_of_Vietnam.svg/200px-Emblem_of_Vietnam.svg.png';">
                 </div>
                 <div>
                     <h1 class="font-bold text-xs sm:text-base leading-tight tracking-tight uppercase">CỔNG THỦ TỤC HÀNH CHÍNH</h1>
                     <p class="text-[10px] sm:text-xs text-red-100 flex items-center gap-1 font-light opacity-90">
-                        <i class="fa-solid fa-cloud-check text-emerald-400 text-[10px]"></i> Kết nối Firebase: bau-cu-hoi-an-dong
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> TRUNG TÂM PHỤC VỤ HÀNH CHÍNH CÔNG PHƯỜNG HỘI AN ĐÔNG
                     </p>
                 </div>
             </div>
@@ -109,33 +113,45 @@
         </div>
     </div>
 
-    <!-- MAIN APP - Bố cục Chia 2 Cột Song Song (Cột 1 Thanh Bar Đứng) -->
+    <!-- MAIN APP - Bố cục Chia 2 Cột Song Song (Cột 1 Auto-Hide trên Mobile) -->
     <main class="max-w-7xl mx-auto px-2 sm:px-6 py-3 flex-grow w-full">
         <div class="grid grid-cols-12 gap-2 sm:gap-5 items-start">
             
-            <!-- CỘT 1: THANH BAR ĐỨNG - DANH MỤC CÁC LĨNH VỰC -->
-            <section id="category-section" class="col-span-4 lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 overflow-hidden sticky top-[100px] sm:top-[115px]">
-                <!-- Header Cột 1 -->
-                <div class="bg-slate-900 text-white p-2 sm:p-3 border-b border-slate-800 flex justify-between items-center">
-                    <div class="flex items-center space-x-1.5">
+            <!-- CỘT 1: THANH BAR ĐỨNG - DANH MỤC CÁC LĨNH VỰC (Auto Hide Mobile) -->
+            <section id="category-section" class="col-span-12 lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 overflow-hidden sticky top-[95px] sm:top-[115px] z-10">
+                <!-- Header Cột 1 (Bấm để Thu gọn / Mở rộng trên Mobile) -->
+                <div id="category-bar-header" class="bg-slate-900 text-white p-2.5 sm:p-3 border-b border-slate-800 flex justify-between items-center cursor-pointer select-none touch-active">
+                    <div class="flex items-center space-x-2 overflow-hidden pr-2">
                         <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-red-600 flex items-center justify-center text-[10px] sm:text-xs font-bold text-white shrink-0">
                             1
                         </div>
-                        <h2 class="font-bold text-[10px] sm:text-xs tracking-wide text-white uppercase truncate">Bar Lĩnh Vực</h2>
+                        <div class="truncate">
+                            <h2 class="font-bold text-[11px] sm:text-xs tracking-wide text-white uppercase flex items-center gap-1 truncate">
+                                <span>Bar Lĩnh Vực</span>
+                                <span id="mobile-selected-label" class="lg:hidden text-[11px] text-yellow-300 font-normal truncate font-sans"></span>
+                            </h2>
+                        </div>
                     </div>
-                    <span id="cat-badge-count" class="text-[9px] sm:text-[10px] bg-red-900/80 text-yellow-300 font-bold px-1.5 py-0.2 rounded-full border border-red-700 shrink-0">
-                        0 Lĩnh vực
-                    </span>
+                    
+                    <div class="flex items-center space-x-1.5 shrink-0">
+                        <span id="cat-badge-count" class="text-[9px] sm:text-[10px] bg-red-900/80 text-yellow-300 font-bold px-1.5 py-0.2 rounded-full border border-red-700">
+                            0 Lĩnh vực
+                        </span>
+                        <!-- Nút toggle icon cho Mobile -->
+                        <div class="lg:hidden w-6 h-6 flex items-center justify-center text-slate-300 hover:text-white">
+                            <i id="toggle-cat-icon" class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Danh sách Bar Đứng (Cột 1) -->
-                <div id="category-column-container" class="p-1 sm:p-2 space-y-1 max-h-[calc(100vh-160px)] sm:max-h-[calc(100vh-180px)] overflow-y-auto custom-scrollbar">
+                <!-- Danh sách Bar Đứng (Cột 1) - Auto Hide trên Mobile -->
+                <div id="category-column-container" class="hidden lg:block p-1 sm:p-2 space-y-1 max-h-[55vh] lg:max-h-[calc(100vh-180px)] overflow-y-auto custom-scrollbar border-t lg:border-0 border-slate-100">
                     <!-- Dynamic rendering via OOP JavaScript -->
                 </div>
             </section>
 
             <!-- CỘT 2: CÁC THỦ TỤC HÀNH CHÍNH THEO LĨNH VỰC -->
-            <section id="procedure-section" class="col-span-8 lg:col-span-8 xl:col-span-9 space-y-2 sm:space-y-3">
+            <section id="procedure-section" class="col-span-12 lg:col-span-8 xl:col-span-9 space-y-2 sm:space-y-3">
                 <!-- Header Cột 2 -->
                 <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-2.5 sm:p-3.5 border-l-4 border-l-red-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5">
                     <div class="flex items-center space-x-2">
@@ -347,7 +363,7 @@
         </div>
     </div>
 
-    <!-- Modal 5: Custom Confirmation Modal (Thay thế alert/confirm) -->
+    <!-- Modal 5: Custom Confirmation Modal -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-xs w-full overflow-hidden p-5 text-center">
             <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
@@ -460,7 +476,6 @@
                 this.onDataChangeCallback = null;
             }
 
-            // Thiết lập listener lắng nghe Firestore
             subscribeFirebase(user, onDataChange) {
                 if (!user) return;
                 this.onDataChangeCallback = onDataChange;
@@ -552,7 +567,6 @@
                 return this.procedures.length;
             }
 
-            // HÀM SEED DỮ LIỆU BAN ĐẦU VÀO FIREBASE
             async seedDefaultData() {
                 const defaultCategories = [
                     { id: 'CAT_01', code: 'BTXH', name: '1. Bảo trợ xã hội & ATTP', icon: 'fa-hand-holding-heart', pdfFile: 'https://drive.usercontent.google.com/download?id=1VMtYehNFWP9DTuKi8N7Q4YlZ6PKdNGso&export=download&authuser=0&confirm=t&uuid=2f837745-97d0-4c78-83f5-eb3587d2b163&at=ABswASaxrqJzIFGoRAgvX6wq380W:1784622206188', description: 'Trợ cấp xã hội, bảo trợ trẻ em và an toàn thực phẩm.' },
@@ -591,13 +605,11 @@
                     { code: '1.001612.H17', name: 'Đăng ký thành lập hộ kinh doanh', categoryId: 'CAT_17', pdfFile: 'QR 17( linh vuc tài chính)(new).pdf', pageRange: 'Trang 4 - 7' }
                 ];
 
-                // Upload Categories
                 for (const cat of defaultCategories) {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'categories', cat.id);
                     await setDoc(docRef, cat);
                 }
 
-                // Upload Procedures
                 for (const proc of defaultProcedures) {
                     const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'procedures'));
                     await setDoc(docRef, proc);
@@ -660,7 +672,7 @@
         }
 
         /**
-         * LỚP 5: AppUIController (Điều khiển Toàn bộ Giao diện & Chế độ Admin)
+         * LỚP 5: AppUIController (Điều khiển Toàn bộ Giao diện & Chế độ Mobile Auto-Hide)
          */
         class AppUIController {
             constructor() {
@@ -678,9 +690,12 @@
             }
 
             initDOMReferences() {
+                this.categoryBarHeader = document.getElementById('category-bar-header');
                 this.categoryColumnContainer = document.getElementById('category-column-container');
                 this.procedureColumnContainer = document.getElementById('procedure-column-container');
-                
+                this.toggleCatIcon = document.getElementById('toggle-cat-icon');
+                this.mobileSelectedLabel = document.getElementById('mobile-selected-label');
+
                 this.searchInput = document.getElementById('search-input');
                 this.clearSearchBtn = document.getElementById('clear-search-btn');
                 this.resetFilterBtn = document.getElementById('reset-filter-btn');
@@ -725,7 +740,6 @@
                 this.confirmModalCancel = document.getElementById('confirm-modal-cancel');
             }
 
-            // Khởi tạo Firebase Auth trước tiên
             async initFirebase() {
                 try {
                     const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -738,18 +752,30 @@
                     console.warn("Lỗi Auth Firebase:", err);
                 }
 
-                // Lắng nghe Auth State
                 onAuthStateChanged(auth, (user) => {
                     this.currentUser = user;
                     if (user) {
                         this.adminUserId.textContent = user.uid;
-                        // Lắng nghe dữ liệu Firestore Realtime
                         this.repository.subscribeFirebase(user, () => this.render());
                     }
                 });
             }
 
             bindEvents() {
+                // Sự kiện Bấm vào Header Bar Lĩnh Vực để Toggle Ẩn/Hiện trên Mobile
+                this.categoryBarHeader.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) { // Chỉ kích hoạt toggle ở màn hình Smartphone / Mobile
+                        const isHidden = this.categoryColumnContainer.classList.contains('hidden');
+                        if (isHidden) {
+                            this.categoryColumnContainer.classList.remove('hidden');
+                            this.toggleCatIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                        } else {
+                            this.categoryColumnContainer.classList.add('hidden');
+                            this.toggleCatIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                        }
+                    }
+                });
+
                 // Ô Tìm kiếm
                 this.searchInput.addEventListener('input', (e) => {
                     this.searchKeyword = e.target.value;
@@ -784,7 +810,7 @@
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
 
-                // --- SỰ KIỆN ADMIN ---
+                // ADMIN EVENTS
                 this.adminAuthBtn.addEventListener('click', () => {
                     if (this.isAdmin) {
                         this.toggleAdminMode(false);
@@ -815,7 +841,6 @@
                     this.showToast('Đã thoát Chế độ Quản trị', 'info');
                 });
 
-                // Seed dữ liệu mẫu Firebase
                 this.seedDataBtn.addEventListener('click', async () => {
                     this.showConfirmModal("Nạp dữ liệu mẫu lên Firebase?", "Hành động này sẽ cập nhật 19 Lĩnh vực và các Thủ tục mặc định vào CSDL Cloud.", async () => {
                         try {
@@ -829,7 +854,6 @@
                     });
                 });
 
-                // Form Thêm Thủ tục Modal
                 this.addProcedureBtn.addEventListener('click', () => this.openProcedureForm());
                 this.closeProcModalBtn.addEventListener('click', () => this.procedureFormModal.classList.add('hidden'));
                 this.cancelProcBtn.addEventListener('click', () => this.procedureFormModal.classList.add('hidden'));
@@ -848,12 +872,10 @@
                     try {
                         const procData = { code, name, categoryId, pdfFile, pageRange };
                         if (id) {
-                            // Update
                             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'procedures', id);
                             await updateDoc(docRef, procData);
                             this.showToast('Đã cập nhật thủ tục thành công!', 'success');
                         } else {
-                            // Add New
                             const procCol = collection(db, 'artifacts', appId, 'public', 'data', 'procedures');
                             await addDoc(procCol, procData);
                             this.showToast('Đã thêm thủ tục mới lên Firebase!', 'success');
@@ -864,7 +886,6 @@
                     }
                 });
 
-                // Form Thêm Lĩnh vực Modal
                 this.addCategoryBtn.addEventListener('click', () => this.openCategoryForm());
                 this.closeCatModalBtn.addEventListener('click', () => this.categoryFormModal.classList.add('hidden'));
                 this.cancelCatBtn.addEventListener('click', () => this.categoryFormModal.classList.add('hidden'));
@@ -1002,6 +1023,20 @@
                 this.activeCategoryId = catId;
                 this.renderCategoriesBar();
                 this.renderProceduresColumn();
+
+                // TỰ ĐỘNG ẨN BAR LĨNH VỰC TRÊN MOBILE KHI NGƯỜI DÙNG CHỌN XONG
+                if (window.innerWidth < 1024) {
+                    this.categoryColumnContainer.classList.add('hidden');
+                    this.toggleCatIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+
+                    // Cuộn mượt tới danh sách thủ tục
+                    const procSec = document.getElementById('procedure-section');
+                    if (procSec) {
+                        const yOffset = -140; 
+                        const y = procSec.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                    }
+                }
             }
 
             render() {
@@ -1013,13 +1048,23 @@
                 this.renderProceduresColumn();
             }
 
-            // RENDER CỘT 1: THANH BAR ĐỨNG
+            // RENDER CỘT 1: THANH BAR ĐỨNG (Hỗ trợ nhãn di động)
             renderCategoriesBar() {
                 this.categoryColumnContainer.innerHTML = '';
                 const categories = this.repository.getAllCategories();
                 const totalProcs = this.repository.getTotalProceduresCount();
 
-                // Button "Tất cả 19 Lĩnh vực"
+                // Cập nhật Nhãn tên Lĩnh vực đang chọn trên Thanh Mobile
+                if (this.activeCategoryId === 'ALL') {
+                    this.mobileSelectedLabel.textContent = `: Tất cả`;
+                } else {
+                    const selectedCat = this.repository.getCategoryById(this.activeCategoryId);
+                    if (selectedCat) {
+                        this.mobileSelectedLabel.textContent = `: ${selectedCat.name}`;
+                    }
+                }
+
+                // Button "Tất cả Lĩnh vực"
                 const isAllActive = this.activeCategoryId === 'ALL';
                 const allCatBtn = document.createElement('div');
                 allCatBtn.className = `p-2 sm:p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-between border touch-active ${
@@ -1032,14 +1077,14 @@
                         <i class="fa-solid fa-layer-group ${isAllActive ? 'text-yellow-300' : 'text-red-600'} text-xs shrink-0"></i>
                         <span class="text-[11px] sm:text-xs truncate">Tất cả Lĩnh vực</span>
                     </div>
-                    <span class="hidden sm:inline text-[10px] px-1.5 py-0.2 rounded-full ${isAllActive ? 'bg-red-900 text-yellow-300' : 'bg-slate-200 text-slate-700'} font-bold shrink-0">
+                    <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isAllActive ? 'bg-red-900 text-yellow-300' : 'bg-slate-200 text-slate-700'} font-bold shrink-0">
                         ${totalProcs}
                     </span>
                 `;
                 allCatBtn.onclick = () => this.setActiveCategory('ALL');
                 this.categoryColumnContainer.appendChild(allCatBtn);
 
-                // Render Lĩnh vực xếp DỌC
+                // Render 19 Lĩnh vực xếp DỌC
                 categories.forEach(cat => {
                     const isActive = this.activeCategoryId === cat.id;
                     const catItem = document.createElement('div');
@@ -1062,24 +1107,22 @@
                     catItem.innerHTML = `
                         <div class="flex items-center space-x-1.5 sm:space-x-2 overflow-hidden w-full">
                             <i class="fa-solid ${cat.icon} ${isActive ? 'text-yellow-300' : 'text-red-600 group-hover:scale-110'} transition-transform text-xs w-3.5 text-center shrink-0"></i>
-                            <span class="text-[10px] sm:text-xs truncate leading-snug">${cat.name}</span>
+                            <span class="text-[11px] sm:text-xs truncate leading-snug">${cat.name}</span>
                         </div>
-                        <div class="flex items-center shrink-0">
-                            <span class="hidden sm:inline text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-red-900 text-yellow-300' : 'bg-slate-100 text-slate-600'} font-bold">
+                        <div class="flex items-center shrink-0 ml-1">
+                            <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-red-900 text-yellow-300' : 'bg-slate-100 text-slate-600'} font-bold">
                                 ${cat.procedureCount}
                             </span>
                             ${adminBtns}
                         </div>
                     `;
 
-                    // Click select
                     catItem.addEventListener('click', (e) => {
                         if (!e.target.closest('.edit-cat-btn') && !e.target.closest('.delete-cat-btn')) {
                             this.setActiveCategory(cat.id);
                         }
                     });
 
-                    // Admin Events for Category
                     if (this.isAdmin) {
                         const editBtn = catItem.querySelector('.edit-cat-btn');
                         const delBtn = catItem.querySelector('.delete-cat-btn');
@@ -1175,7 +1218,6 @@
                         </div>
                     `;
 
-                    // Click xem PDF
                     const clickTargets = card.querySelectorAll('.view-pdf-btn, h3');
                     clickTargets.forEach(target => {
                         target.addEventListener('click', () => {
@@ -1183,7 +1225,6 @@
                         });
                     });
 
-                    // Admin Actions
                     if (this.isAdmin) {
                         const editBtn = card.querySelector('.edit-proc-btn');
                         const delBtn = card.querySelector('.del-proc-btn');
